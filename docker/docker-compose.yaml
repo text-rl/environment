@@ -1,0 +1,26 @@
+version: "3.9"
+services:
+  ## APPLICATIONS ##
+  text-rl-db:
+    container_name: text-rl-db
+    restart: unless-stopped
+    image: mcr.microsoft.com/mssql/server:2017-latest
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=textRlPwd
+      - MSSQL_PID=Express
+    ports:
+      - 1433:1433
+    volumes:
+      - ./text-rl-db:/var/opt/mssql/data
+
+  text-rl-rabbitmq:
+    container_name: text-rl-rabbitmq
+    image: rabbitmq:3-management
+    restart: unless-stopped
+    hostname: text-rl-rabbitmq
+    volumes:
+      - ./text-rl-rabbitmq/conf:/etc/rabbitmq
+    ports:
+      - 5672:5672
+      - 15672:15672
