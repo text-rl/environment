@@ -1,0 +1,12 @@
+[submodule "treatment-app"]
+    path = treatment-app
+	url = https://github.com/text-rl/treatment-app
+[submodule "training-app"]
+    path = training-app
+	url = https://github.com/text-rl/training-app
+[submodule "core-api"]
+    path = core-api
+	url = https://github.com/text-rl/core-api
+[submodule "web-client"]
+    path = web-client
+	url = https://github.com/text-rl/web-client
