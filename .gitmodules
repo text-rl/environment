@@ -7,6 +7,12 @@
 [submodule "core-api-net"]
 	path = core-api-net
 	url = https://github.com/text-rl/core-api-net
+[submodule "core-api-express"]
+	path = core-api-express
+	url = https://github.com/text-rl/core-api-express
+[submodule "monitoring"]
+	path = monitoring
+	url = https://github.com/text-rl/monitoring
 [submodule "web-client"]
     path = web-client
 	url = https://github.com/text-rl/web-client

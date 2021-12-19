@@ -1,8 +1,46 @@
 version: "3.9"
 services:
   ## APPLICATIONS ##
-  text-rl-db:
-    container_name: text-rl-db
+  text-rl-core-api-express:
+    container_name: text-rl-core-api-express
+    restart: unless-stopped
+    image: text-rl-core-api-express
+    build:
+      context: ../core-api-express
+      dockerfile: Dockerfile
+    env_file:
+      - ../core-api-express/docker.env
+    ports:
+      - 5002:5000
+
+
+  text-rl-core-api-net:
+    container_name: text-rl-core-api-net
+    restart: unless-stopped
+    image: text-rl-core-api-net
+    build:
+      context: ../core-api-net
+      dockerfile: Dockerfile
+    env_file:
+      - ../core-api-net/docker.env
+    ports:
+      - 5003:5000
+
+  text-rl-web-client:
+    container_name: text-rl-web-client
+    restart: unless-stopped
+    image: text-rl-web-client
+    build:
+      context: ../web-client
+      dockerfile: Dockerfile
+    env_file:
+      - ../web-client/docker.env
+    ports:
+      - 4201:4201
+
+  ## DATABASES ##
+  text-rl-db-mssql:
+    container_name: text-rl-db-mssql
     restart: unless-stopped
     image: mcr.microsoft.com/mssql/server:2017-latest
     environment:
@@ -12,15 +50,90 @@ services:
     ports:
       - 1433:1433
     volumes:
-      - ./text-rl-db:/var/opt/mssql/data
+      - ./text-rl-db-mssql:/var/opt/mssql/data
 
-  text-rl-rabbitmq:
-    container_name: text-rl-rabbitmq
+  text-rl-db-mysql:
+    image: mysql
+    command: --default-authentication-plugin=mysql_native_password
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: textRlPwd
+    ports:
+      - 3306:3306
+    volumes:
+      - ./text-rl-db-mysql:/var/lib/mysql
+
+  ## MESSAGING ##
+  text-rl-broker-rabbitmq:
+    container_name: text-rl-broker-rabbitmq
     image: rabbitmq:3-management
     restart: unless-stopped
     hostname: text-rl-rabbitmq
     volumes:
-      - ./text-rl-rabbitmq/conf:/etc/rabbitmq
+      - ./text-rl-broker-rabbitmq/conf:/etc/rabbitmq
     ports:
       - 5672:5672
       - 15672:15672
+
+  text-rl-zookeeper:
+    container_name: text-rl-zookeeper
+    restart: unless-stopped
+    image: wurstmeister/zookeeper
+    ports:
+      - "2181:2181"
+  text-rl-broker-kafka:
+    image: wurstmeister/kafka
+    restart: unless-stopped
+    container_name: text-rl-broker-kafka
+    ports:
+      - "9092:9092"
+    expose:
+      - "9093"
+    environment:
+      KAFKA_ADVERTISED_LISTENERS: INSIDE://text-rl-broker-kafka:9093,OUTSIDE://localhost:9092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INSIDE:PLAINTEXT,OUTSIDE:PLAINTEXT
+      KAFKA_LISTENERS: INSIDE://0.0.0.0:9093,OUTSIDE://0.0.0.0:9092
+      KAFKA_INTER_BROKER_LISTENER_NAME: INSIDE
+      KAFKA_ZOOKEEPER_CONNECT: text-rl-zookeeper:2181
+      KAFKA_CREATE_TOPICS: "text-rl-treatment-pending:1:1,text-rl-treatment-done:1:1"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./text-rl-broker-kafka/srv/kafka:/kafka/kafka-logs-1
+
+  ## MONITORING ##
+  text-rl-grafana:
+    container_name: text-rl-grafana
+    image: grafana/grafana:latest
+    restart: unless-stopped
+    volumes:
+      - ./grafana:/var/lib/grafana
+    ports:
+      - 3000:3000
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=text-rl-pwd
+      - GF_USERS_ALLOW_SIGN_UP=false
+      - GF_SERVER_DOMAIN=myrul.com
+      - GF_SMTP_ENABLED=true
+      - GF_SMTP_HOST=smtp.gmail.com:587
+      - GF_SMTP_USER=myadrress@gmail.com
+      - GF_SMTP_PASSWORD=mypassword
+      - GF_SMTP_FROM_ADDRESS=myaddress@gmail.com
+
+  text-rl-prometheus:
+    image: prom/prometheus:latest
+    container_name: text-rl-prometheus
+    restart: unless-stopped
+    volumes:
+      - ./prometheus/config/prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./prometheus/data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/usr/share/prometheus/console_libraries'
+      - '--web.console.templates=/usr/share/prometheus/consoles'
+    user: root
+    expose:
+      - 9090
+    ports:
+      - 9090:9090
+

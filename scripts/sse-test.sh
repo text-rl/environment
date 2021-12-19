@@ -1,0 +1,2 @@
+curl --location --request GET "http://localhost:5000/sse-notifications" ^
+--header "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoiNWQ1ZDJjMjEtMjg2My00YTIwLTk3YzEtODM1NmUyYWUzZWY2IiwiZXhwIjoxNjM3MTYzMDc5LCJpc3MiOiJUZXh0UmwiLCJhdWQiOiJUZXh0UmwifQ.i2UeY59bZFuEEiku4p70VhaCUORnu4B3uF-0ZYROJHg"
