@@ -1,8 +1,8 @@
-/docker/text-rl-db-mssql/**
-/docker/text-rl-db-mysql/**
-/docker/grafana/**
-/docker/prometheus/data/**
-/docker/text-rl-broker-kafka/**
+/docker-fyc/text-rl-db-mssql/**
+/docker-fyc/text-rl-db-mysql/**
+/docker-fyc/grafana/**
+/docker-fyc/prometheus/data/**
+/docker-fyc/text-rl-broker-kafka/**
 /.idea/**
 ### JetBrains template
 # Covers JetBrains IDEs: IntelliJ, RubyMine, PhpStorm, AppCode, PyCharm, CLion, Android Studio, WebStorm and Rider
