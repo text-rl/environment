@@ -64,7 +64,23 @@ services:
     volumes:
       - ./text-rl-db-mysql:/var/lib/mysql
 
-  ## MESSAGING ##
+  text-rl-db-mssql-exporter:
+    image: githubfree/sql_exporter
+    container_name: text-rl-db-mssql-exporter
+    ports:
+      - 9399:9399
+    volumes:
+      - ./text-rl-db-sql-exporter/sql_exporter.yml:/sql_exporter.yml
+      - ./text-rl-db-sql-exporter/mssql_standard.collector.yml:/mssql_standard.collector.yml
+
+  text-rl-db-mysql-exporter:
+    image: prom/mysqld-exporter
+    container_name: text-rl-db-mysql-exporter
+    environment:
+      DATA_SOURCE_NAME: root:textRlPwd@(text-rl-db-mysql:3306)/
+    ports:
+      - 9104:9104
+      ## MESSAGING ##
   text-rl-broker-rabbitmq:
     container_name: text-rl-broker-rabbitmq
     image: rabbitmq:3-management
