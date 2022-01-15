@@ -37,6 +37,16 @@ services:
       - ../web-client/docker.env
     ports:
       - 4201:4201
+  treatment-app:
+    container_name: treatment-app
+    restart: unless-stopped
+    image: treatment-app
+    build:
+      context: ../treatment-app
+      dockerfile: Dockerfile
+    env_file:
+      - ../treatment-app/docker.env
+
 
   ## DATABASES ##
   text-rl-db-mssql:
@@ -80,7 +90,8 @@ services:
       DATA_SOURCE_NAME: root:textRlPwd@(text-rl-db-mysql:3306)/
     ports:
       - 9104:9104
-      ## MESSAGING ##
+
+  ## MESSAGING ##
   text-rl-broker-rabbitmq:
     container_name: text-rl-broker-rabbitmq
     image: rabbitmq:3-management
@@ -92,30 +103,6 @@ services:
       - 5672:5672
       - 15672:15672
 
-  text-rl-zookeeper:
-    container_name: text-rl-zookeeper
-    restart: unless-stopped
-    image: wurstmeister/zookeeper
-    ports:
-      - "2181:2181"
-  text-rl-broker-kafka:
-    image: wurstmeister/kafka
-    restart: unless-stopped
-    container_name: text-rl-broker-kafka
-    ports:
-      - "9092:9092"
-    expose:
-      - "9093"
-    environment:
-      KAFKA_ADVERTISED_LISTENERS: INSIDE://text-rl-broker-kafka:9093,OUTSIDE://localhost:9092
-      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INSIDE:PLAINTEXT,OUTSIDE:PLAINTEXT
-      KAFKA_LISTENERS: INSIDE://0.0.0.0:9093,OUTSIDE://0.0.0.0:9092
-      KAFKA_INTER_BROKER_LISTENER_NAME: INSIDE
-      KAFKA_ZOOKEEPER_CONNECT: text-rl-zookeeper:2181
-      KAFKA_CREATE_TOPICS: "text-rl-treatment-pending:1:1,text-rl-treatment-done:1:1"
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-      - ./text-rl-broker-kafka/srv/kafka:/kafka/kafka-logs-1
 
   ## MONITORING ##
   text-rl-grafana:
