@@ -44,11 +44,23 @@ services:
     build:
       context: ../treatment-app
       dockerfile: Dockerfile
+    ports:
+      - 8081:8080
     env_file:
       - ../treatment-app/docker.env
 
 
   ## DATABASES ##
+
+  text-rl-redis:
+    container_name: text-rl-redis
+    image: redis:latest
+    ports:
+      - 6379:6379
+    volumes:
+      - ./text-rl-redis/conf/redis.conf:/redis.conf
+    command: [ "redis-server", "/redis.conf" ]
+
   text-rl-db-mssql:
     container_name: text-rl-db-mssql
     restart: unless-stopped

@@ -8,6 +8,12 @@ scrape_configs:
   - job_name: core-api-express-localhost
     static_configs:
       - targets: [ 'host.docker.internal:5000' ]
+  - job_name: treatment-app
+    static_configs:
+      - targets: [ 'treatment-app:8080' ]
+  - job_name: treatment-app-localhost
+    static_configs:
+      - targets: [ 'host.docker.internal:8081' ]
   - job_name: node-exporter-express
     static_configs:
       - targets: [ 'text-rl-core-api-express:9100' ]
