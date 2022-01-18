@@ -45,13 +45,12 @@ services:
       context: ../treatment-app
       dockerfile: Dockerfile
     ports:
-      - 8081:8080
+      - 5007:5006
     env_file:
       - ../treatment-app/docker.env
 
 
   ## DATABASES ##
-
   text-rl-redis:
     container_name: text-rl-redis
     image: redis:latest
